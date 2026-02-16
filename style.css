@@ -1,1 +1,31 @@
-/* Add styles here */
+body {
+    font-family: 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+    color: #333;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+    padding: 2rem 0;
+}
+
+h1 {
+    color: #505050;
+    text-align: center;
+}
+
+p {
+    text-align: justify;
+}
+
+.extra-info {
+    background: #e2e2e2;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-top: 1rem;
+}
