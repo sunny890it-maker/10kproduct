@@ -1,18 +1,749 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>바이브 코딩</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Startup School Finder</title>
+  <style>
+    :root{
+      --bg:#0b0f17;
+      --panel:#101827;
+      --card:#0f172a;
+      --muted:#9aa4b2;
+      --text:#e6edf6;
+      --accent:#5eead4;
+      --accent2:#60a5fa;
+      --danger:#fb7185;
+      --border: rgba(255,255,255,.08);
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", AppleSDGothicNeo, "Malgun Gothic", Arial, sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background:
+        radial-gradient(1200px 700px at 15% 10%, rgba(94,234,212,.10), transparent 55%),
+        radial-gradient(900px 600px at 80% 20%, rgba(96,165,250,.10), transparent 50%),
+        linear-gradient(180deg, var(--bg), #070a10);
+      color:var(--text);
+    }
+    a{color:inherit}
+    .wrap{max-width:1200px;margin:0 auto;padding:22px}
+    header{
+      display:flex;gap:16px;align-items:flex-start;justify-content:space-between;
+      padding:18px 18px 6px;
+      border:1px solid var(--border);
+      background:rgba(16,24,39,.55);
+      backdrop-filter: blur(10px);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .title{display:flex;flex-direction:column;gap:8px}
+    .title h1{margin:0;font-size:22px;letter-spacing:.2px}
+    .title p{margin:0;color:var(--muted);line-height:1.45;max-width:680px}
+    .badgeRow{display:flex;flex-wrap:wrap;gap:8px}
+    .badge{
+      border:1px solid var(--border);
+      background:rgba(15,23,42,.7);
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .badge b{color:var(--text)}
+    .rightBox{
+      display:flex;flex-direction:column;gap:10px;min-width:280px;max-width:320px;
+    }
+    .statBox{
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:rgba(15,23,42,.75);
+      padding:12px 12px;
+    }
+    .statBox .row{display:flex;justify-content:space-between;gap:10px}
+    .statBox .row span{color:var(--muted);font-size:12px}
+    .statBox .row strong{font-family:var(--mono);font-size:12px}
+    .hint{
+      color:var(--muted);font-size:12px;line-height:1.45;
+      padding:10px 12px;border:1px dashed rgba(255,255,255,.18);
+      border-radius:16px;background:rgba(15,23,42,.35);
+    }
+
+    .controls{
+      margin-top:16px;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      background:rgba(16,24,39,.50);
+      box-shadow: var(--shadow);
+      padding:14px;
+      display:grid;
+      grid-template-columns: 1.2fr 0.9fr 0.9fr 0.9fr 0.9fr;
+      gap:10px;
+    }
+    @media (max-width: 980px){
+      header{flex-direction:column}
+      .rightBox{max-width:none;min-width:unset}
+      .controls{grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width: 520px){
+      .controls{grid-template-columns:1fr}
+    }
+    .field{
+      display:flex;flex-direction:column;gap:6px;
+    }
+    label{
+      font-size:12px;color:var(--muted);
+    }
+    input, select{
+      width:100%;
+      padding:11px 12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(15,23,42,.70);
+      color:var(--text);
+      outline:none;
+    }
+    input::placeholder{color:rgba(154,164,178,.7)}
+    .btnRow{
+      margin-top:10px;
+      display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+    }
+    .btns{display:flex;flex-wrap:wrap;gap:10px}
+    button{
+      cursor:pointer;
+      border:1px solid var(--border);
+      background:rgba(15,23,42,.75);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      font-weight:600;
+    }
+    button.primary{
+      border-color:rgba(94,234,212,.35);
+      box-shadow: 0 0 0 3px rgba(94,234,212,.10);
+    }
+    button:hover{filter:brightness(1.07)}
+    .small{
+      font-size:12px;color:var(--muted)
+    }
+
+    .grid{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:12px;
+    }
+    @media (max-width: 980px){ .grid{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width: 600px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      border:1px solid var(--border);
+      background:rgba(15,23,42,.70);
+      border-radius:var(--radius);
+      padding:14px;
+      box-shadow: var(--shadow);
+      display:flex;flex-direction:column;gap:10px;
+      min-height: 210px;
+    }
+    .cardTop{
+      display:flex;justify-content:space-between;gap:10px;align-items:flex-start;
+    }
+    .schoolName{font-size:16px;margin:0}
+    .meta{
+      display:flex;flex-wrap:wrap;gap:8px;color:var(--muted);font-size:12px
+    }
+    .pill{
+      padding:5px 9px;border:1px solid var(--border);
+      border-radius:999px;background:rgba(16,24,39,.50)
+    }
+    .tag{
+      padding:5px 9px;border-radius:999px;
+      border:1px solid rgba(96,165,250,.35);
+      background:rgba(96,165,250,.10);
+      color:#cfe3ff;
+      font-size:12px
+    }
+    .tag2{
+      border-color:rgba(94,234,212,.35);
+      background:rgba(94,234,212,.10);
+      color:#c9fff5;
+    }
+    .tag3{
+      border-color:rgba(251,113,133,.35);
+      background:rgba(251,113,133,.10);
+      color:#ffd3db;
+    }
+    details{
+      border-top:1px solid var(--border);
+      padding-top:10px;
+    }
+    summary{
+      cursor:pointer;
+      list-style:none;
+      font-weight:700;
+      color:rgba(230,237,246,.92);
+      display:flex;align-items:center;justify-content:space-between;
+      gap:10px;
+    }
+    summary::-webkit-details-marker{display:none}
+    .chev{
+      width:26px;height:26px;border-radius:10px;
+      border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      color:var(--muted);
+      font-family:var(--mono);
+      flex:0 0 auto;
+    }
+    .kvs{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:8px;
+    }
+    .kv{
+      display:flex;gap:10px;justify-content:space-between;align-items:flex-start;
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:14px;
+      background:rgba(16,24,39,.45);
+      padding:10px 11px;
+    }
+    .kv .k{color:var(--muted);font-size:12px}
+    .kv .v{font-size:12px;text-align:right;max-width:68%}
+    .kv .v code{font-family:var(--mono);font-size:11px}
+    .list{
+      margin:10px 0 0;
+      padding-left:18px;
+      color:rgba(230,237,246,.88);
+      font-size:12px;
+      line-height:1.5;
+    }
+    footer{
+      margin:20px 0 10px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:center;
+    }
+    .note{
+      margin-top:10px;
+      color:rgba(154,164,178,.95);
+      font-size:12px;
+      line-height:1.5;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(15,23,42,.35);
+      border-radius:16px;
+      padding:10px 12px;
+    }
+    .mono{font-family:var(--mono)}
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <button id="darkModeToggle">Toggle Dark Mode</button>
-        <h1>바이브 코딩이란?</h1>
-        <p>바이브 코딩은 정해진 규칙이나 형식에 얽매이지 않고, 개발자의 감성과 직관에 따라 자유롭게 코드를 작성하는 프로그래밍 스타일을 의미합니다. 마치 재즈 연주자가 악보를 넘어 즉흥적으로 연주하듯, 코드를 통해 자신의 생각과 느낌을 표현하는 것을 중요하게 생각합니다.</p>
-        <p>이러한 접근 방식은 창의적인 문제 해결과 독창적인 결과물 도출에 도움을 줄 수 있지만, 협업 환경에서는 코드의 가독성과 유지보수 측면에서 어려움을 야기할 수도 있습니다. 따라서 바이브 코딩을 적용할 때는 팀원들과의 충분한 소통과 합의가 중요합니다.</p>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Startup School Finder 🧭</h1>
+        <p>
+          스타트업 창업을 꿈꾸는 학생들을 위해, “창업에 유리한 학교”를 정리하고 비교하는 데이터베이스 웹사이트.
+          검색/필터/정렬로 학교를 고르고, 입학 방식, 점수/요건, 학비(대략), 창업 리소스를 한눈에 봅니다.
+        </p>
+        <div class="badgeRow">
+          <div class="badge"><b>검색</b> 키워드</div>
+          <div class="badge"><b>필터</b> 국가/지역, 전공계열, 예산</div>
+          <div class="badge"><b>정렬</b> 학비, 선택도, 창업강도</div>
+          <div class="badge"><b>확장</b> JSON으로 데이터 추가</div>
+        </div>
+        <div class="note">
+          ⚠️ 안내: 아래 “점수/학비”는 <b>샘플</b>이며, 실제 운영용으로는 각 학교 공식 사이트 기준으로 업데이트해야 합니다.
+          이 페이지는 “구조 + 기능”을 완성해두고, 데이터는 너가 계속 채워 넣는 방식이에요.
+        </div>
+      </div>
+
+      <div class="rightBox">
+        <div class="statBox">
+          <div class="row"><span>표시 중</span><strong id="statShowing">-</strong></div>
+          <div class="row" style="margin-top:6px;"><span>전체</span><strong id="statTotal">-</strong></div>
+        </div>
+        <div class="hint">
+          💡 데이터 추가는 맨 아래 <span class="mono">SCHOOLS</span> 배열에 객체 하나 붙이면 끝.
+          나중에 Firebase/DB로 바꾸고 싶으면, 배열 대신 API로 받아오게만 바꾸면 돼.
+        </div>
+      </div>
+    </header>
+
+    <section class="controls" aria-label="filters">
+      <div class="field">
+        <label for="q">검색 (학교명/도시/특징/키워드)</label>
+        <input id="q" placeholder="예: accelerator, CS, business, San Francisco, 창업, VC..." />
+      </div>
+
+      <div class="field">
+        <label for="region">지역</label>
+        <select id="region">
+          <option value="all">전체</option>
+          <option value="na">북미</option>
+          <option value="eu">유럽</option>
+          <option value="asia">아시아</option>
+          <option value="oce">오세아니아</option>
+          <option value="me">중동</option>
+          <option value="latam">중남미</option>
+          <option value="af">아프리카</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="track">강점 트랙</label>
+        <select id="track">
+          <option value="all">전체</option>
+          <option value="accelerator">액셀러레이터/인큐베이터</option>
+          <option value="cs">컴퓨터/AI</option>
+          <option value="business">비즈/경영</option>
+          <option value="design">디자인/HCI</option>
+          <option value="engineering">공학/메이커</option>
+          <option value="finance">금융/VC</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="budget">연간 학비 예산(대략)</label>
+        <select id="budget">
+          <option value="all">전체</option>
+          <option value="low">낮음 (≈ $0–$20k)</option>
+          <option value="mid">중간 (≈ $20k–$45k)</option>
+          <option value="high">높음 (≈ $45k+)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="sort">정렬</label>
+        <select id="sort">
+          <option value="fit">추천도(기본)</option>
+          <option value="tuitionAsc">학비 낮은 순</option>
+          <option value="tuitionDesc">학비 높은 순</option>
+          <option value="startupDesc">창업 리소스 강한 순</option>
+          <option value="selectiveDesc">선택도 높은 순</option>
+        </select>
+      </div>
+    </section>
+
+    <div class="btnRow">
+      <div class="btns">
+        <button class="primary" id="btnReset">초기화</button>
+        <button id="btnExport">현재 결과 JSON 내보내기</button>
+        <button id="btnImport">JSON 가져오기(붙여넣기)</button>
+      </div>
+      <div class="small" id="smallMsg"></div>
     </div>
-    <script src="main.js" defer></script>
+
+    <section class="grid" id="grid" aria-label="school results"></section>
+
+    <footer>
+      만든 뒤 다음 단계: (1) 실제 데이터 수집 → (2) Firebase/DB 연결 → (3) 로그인/즐겨찾기/비교 기능 추가 ✨
+    </footer>
+  </div>
+
+  <script>
+    /**
+     * ✅ 데이터 구조(학교 1개 객체 예시)
+     * {
+     *  id: "mit",
+     *  name: "MIT",
+     *  city: "Cambridge, MA",
+     *  country: "USA",
+     *  region: "na",
+     *  tracks: ["cs","engineering","accelerator"],
+     *  highlights: ["강력한 연구/엔지니어링", "창업 네트워크", "인큐베이팅 리소스"],
+     *  admissions: {
+     *    type: "학부 (Common App 등)",
+     *    typicalScores: ["SAT/ACT (optional일 수 있음)", "TOEFL/IELTS (유학생)"],
+     *    notes: ["에세이/추천서/활동 중요", "정확한 최신 요건은 공식 사이트 확인"]
+     *  },
+     *  tuitionUSDPerYear: { min: 55000, max: 65000, note: "학비(대략) + 기숙/생활비 별도" },
+     *  startupResourcesScore: 95,    // 0~100 주관 점수(사이트 내부용)
+     *  selectivityScore: 98,         // 0~100 선택도(높을수록 어려움)
+     *  links: {
+     *    admissions: "https://...",
+     *    entrepreneurship: "https://..."
+     *  }
+     * }
+     */
+
+    // 🔧 샘플 데이터 (너는 여기에 학교를 계속 추가하면 됨)
+    const SCHOOLS = [
+      {
+        id: "stanford",
+        name: "Stanford University",
+        city: "Stanford, CA",
+        country: "USA",
+        region: "na",
+        tracks: ["cs","business","accelerator","design"],
+        highlights: [
+          "실리콘밸리 네트워크",
+          "창업/VC 생태계 접근성",
+          "프로젝트 기반 학습과 동아리/랩 풍부"
+        ],
+        admissions: {
+          type: "학부(미국) / 유학생",
+          typicalScores: ["SAT/ACT 정책은 변동 가능", "TOEFL/IELTS(유학생)"],
+          notes: ["에세이/활동/추천서 비중 큼", "전형은 매년 업데이트됨"]
+        },
+        tuitionUSDPerYear: { min: 60000, max: 75000, note: "학비 추정, 장학/재정보조는 개인별 상이" },
+        startupResourcesScore: 98,
+        selectivityScore: 99,
+        links: {
+          admissions: "",
+          entrepreneurship: ""
+        }
+      },
+      {
+        id: "berkeley",
+        name: "UC Berkeley",
+        city: "Berkeley, CA",
+        country: "USA",
+        region: "na",
+        tracks: ["cs","engineering","business","accelerator"],
+        highlights: [
+          "강한 공학/CS",
+          "베이 에어리어 스타트업 연계",
+          "학생 창업 커뮤니티 활성"
+        ],
+        admissions: {
+          type: "학부(UC) / 편입(커뮤니티칼리지 루트 가능)",
+          typicalScores: ["GPA/과목 이수 요건 중심", "유학생 영어성적"],
+          notes: ["전공/칼리지별 요건 다름", "편입은 TAG/ASSIST 등 경로 고려"]
+        },
+        tuitionUSDPerYear: { min: 45000, max: 70000, note: "거주 여부/기숙/생활비에 따라 변동" },
+        startupResourcesScore: 92,
+        selectivityScore: 93,
+        links: { admissions: "", entrepreneurship: "" }
+      },
+      {
+        id: "mit",
+        name: "MIT",
+        city: "Cambridge, MA",
+        country: "USA",
+        region: "na",
+        tracks: ["cs","engineering","accelerator"],
+        highlights: [
+          "메이커/엔지니어링 문화",
+          "연구 기반 창업(딥테크) 강점",
+          "경진대회/랩/네트워크"
+        ],
+        admissions: {
+          type: "학부(미국) / 유학생",
+          typicalScores: ["SAT/ACT 정책 변동 가능", "TOEFL/IELTS(유학생)"],
+          notes: ["수학/과학 역량 + 프로젝트/활동 중요"]
+        },
+        tuitionUSDPerYear: { min: 58000, max: 76000, note: "학비 추정" },
+        startupResourcesScore: 95,
+        selectivityScore: 99,
+        links: { admissions: "", entrepreneurship: "" }
+      },
+      {
+        id: "nus",
+        name: "National University of Singapore (NUS)",
+        city: "Singapore",
+        country: "Singapore",
+        region: "asia",
+        tracks: ["cs","business","engineering","accelerator"],
+        highlights: [
+          "아시아 강한 창업 허브",
+          "정부/산업 연계 프로그램",
+          "국제학생 비중 높음"
+        ],
+        admissions: {
+          type: "학부(국제전형 포함)",
+          typicalScores: ["고교 성적/표준시험(전형별)", "영어성적(필요 시)"],
+          notes: ["학과별 요구가 다르므로 전형 페이지 확인 필요"]
+        },
+        tuitionUSDPerYear: { min: 12000, max: 45000, note: "국적/보조금(지원) 여부 따라 큰 차이" },
+        startupResourcesScore: 88,
+        selectivityScore: 85,
+        links: { admissions: "", entrepreneurship: "" }
+      },
+      {
+        id: "aalto",
+        name: "Aalto University",
+        city: "Espoo",
+        country: "Finland",
+        region: "eu",
+        tracks: ["design","engineering","accelerator"],
+        highlights: [
+          "디자인+테크 융합",
+          "학생 창업 커뮤니티로 유명",
+          "프로덕트/UX 친화적"
+        ],
+        admissions: {
+          type: "학부/석사(유럽식 전형)",
+          typicalScores: ["성적 + 서류/포트폴리오(전공에 따라)", "영어성적(필요 시)"],
+          notes: ["EU/비EU 학비 정책 차이, 프로그램별 확인"]
+        },
+        tuitionUSDPerYear: { min: 0, max: 20000, note: "EU/EEA 여부에 따라 달라짐(샘플)" },
+        startupResourcesScore: 82,
+        selectivityScore: 70,
+        links: { admissions: "", entrepreneurship: "" }
+      }
+    ];
+
+    // ---------- Helpers ----------
+    const $ = (sel) => document.querySelector(sel);
+    const grid = $("#grid");
+    const statShowing = $("#statShowing");
+    const statTotal = $("#statTotal");
+    const smallMsg = $("#smallMsg");
+
+    const fmtMoney = (n) => {
+      if (n === null || n === undefined) return "-";
+      const s = Math.round(n).toString();
+      return "$" + s.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
+
+    const budgetBucket = (tuitionObj) => {
+      const mid = (tuitionObj.min + tuitionObj.max) / 2;
+      if (mid <= 20000) return "low";
+      if (mid <= 45000) return "mid";
+      return "high";
+    };
+
+    const trackLabel = (t) => ({
+      accelerator:"액셀러레이터",
+      cs:"CS/AI",
+      business:"비즈",
+      design:"디자인/HCI",
+      engineering:"공학",
+      finance:"금융/VC"
+    }[t] || t);
+
+    const regionLabel = (r) => ({
+      na:"북미", eu:"유럽", asia:"아시아", oce:"오세아니아", me:"중동", latam:"중남미", af:"아프리카"
+    }[r] || r);
+
+    // ---------- Core: filter/sort ----------
+    function getState(){
+      return {
+        q: $("#q").value.trim().toLowerCase(),
+        region: $("#region").value,
+        track: $("#track").value,
+        budget: $("#budget").value,
+        sort: $("#sort").value
+      };
+    }
+
+    function matches(school, state){
+      const hay = [
+        school.name, school.city, school.country,
+        (school.highlights||[]).join(" "),
+        (school.tracks||[]).join(" "),
+        (school.admissions?.type||""),
+        (school.admissions?.notes||[]).join(" ")
+      ].join(" ").toLowerCase();
+
+      if (state.q && !hay.includes(state.q)) return false;
+      if (state.region !== "all" && school.region !== state.region) return false;
+      if (state.track !== "all" && !(school.tracks||[]).includes(state.track)) return false;
+      if (state.budget !== "all" && budgetBucket(school.tuitionUSDPerYear) !== state.budget) return false;
+
+      return true;
+    }
+
+    function sortSchools(list, state){
+      const copy = [...list];
+
+      const fitScore = (s) => {
+        // 기본 추천도: 창업리소스(가중) - 선택도(조금) - 학비(조금)
+        const tuitionMid = (s.tuitionUSDPerYear.min + s.tuitionUSDPerYear.max) / 2;
+        const tuitionPenalty = Math.min(30, tuitionMid / 3000); // 비싼 학교 약간 패널티
+        return (s.startupResourcesScore * 1.1) + (s.selectivityScore * 0.15) - tuitionPenalty;
+      };
+
+      const tuitionMid = (s) => (s.tuitionUSDPerYear.min + s.tuitionUSDPerYear.max) / 2;
+
+      copy.sort((a,b) => {
+        switch(state.sort){
+          case "tuitionAsc": return tuitionMid(a) - tuitionMid(b);
+          case "tuitionDesc": return tuitionMid(b) - tuitionMid(a);
+          case "startupDesc": return b.startupResourcesScore - a.startupResourcesScore;
+          case "selectiveDesc": return b.selectivityScore - a.selectivityScore;
+          case "fit":
+          default: return fitScore(b) - fitScore(a);
+        }
+      });
+
+      return copy;
+    }
+
+    // ---------- Render ----------
+    function render(){
+      const state = getState();
+      const filtered = SCHOOLS.filter(s => matches(s, state));
+      const sorted = sortSchools(filtered, state);
+
+      statTotal.textContent = `${SCHOOLS.length}개`;
+      statShowing.textContent = `${sorted.length}개`;
+
+      grid.innerHTML = "";
+      if(sorted.length === 0){
+        grid.innerHTML = `
+          <div class="card" style="grid-column:1/-1">
+            <h3 class="schoolName">검색 결과가 없어요 🫥</h3>
+            <div class="meta">
+              <span class="pill">검색어를 줄이거나</span>
+              <span class="pill">필터를 풀어보세요</span>
+              <span class="pill">또는 데이터에 학교를 추가하세요</span>
+            </div>
+            <div class="note">맨 아래 <span class="mono">SCHOOLS</span> 배열에 학교 객체를 추가하면 결과가 늘어납니다.</div>
+          </div>
+        `;
+        return;
+      }
+
+      for(const s of sorted){
+        const tuition = s.tuitionUSDPerYear;
+        const tuitionText = `${fmtMoney(tuition.min)} ~ ${fmtMoney(tuition.max)} / year`;
+        const tags = (s.tracks||[]).slice(0,3).map(t => {
+          const cls = t==="accelerator" ? "tag2" : (t==="finance" ? "tag3" : "");
+          return `<span class="tag ${cls}">${trackLabel(t)}</span>`;
+        }).join("");
+
+        const moreTracks = (s.tracks||[]).length > 3 ? `<span class="pill">+${(s.tracks||[]).length-3}</span>` : "";
+
+        grid.insertAdjacentHTML("beforeend", `
+          <article class="card">
+            <div class="cardTop">
+              <div>
+                <h3 class="schoolName">${escapeHtml(s.name)}</h3>
+                <div class="meta">
+                  <span class="pill">${escapeHtml(s.city)}</span>
+                  <span class="pill">${escapeHtml(s.country)} · ${regionLabel(s.region)}</span>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <div class="meta" style="justify-content:flex-end">
+                  <span class="pill">창업 ${s.startupResourcesScore}/100</span>
+                  <span class="pill">선택도 ${s.selectivityScore}/100</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="meta" style="gap:8px">
+              ${tags}
+              ${moreTracks}
+            </div>
+
+            <details>
+              <summary>
+                자세히 보기
+                <span class="chev">v</span>
+              </summary>
+
+              <div class="kvs">
+                <div class="kv">
+                  <div class="k">입학 방식</div>
+                  <div class="v">${escapeHtml(s.admissions?.type || "-")}</div>
+                </div>
+                <div class="kv">
+                  <div class="k">점수/요건(예시)</div>
+                  <div class="v">${(s.admissions?.typicalScores||[]).map(x=>`<code>${escapeHtml(x)}</code>`).join("<br/>") || "-"}</div>
+                </div>
+                <div class="kv">
+                  <div class="k">학비(대략)</div>
+                  <div class="v">${tuitionText}<br/><span style="color:var(--muted)">${escapeHtml(tuition.note||"")}</span></div>
+                </div>
+              </div>
+
+              <ul class="list">
+                ${(s.highlights||[]).map(h=>`<li>${escapeHtml(h)}</li>`).join("")}
+              </ul>
+
+              <div class="note">
+                ${escapeHtml((s.admissions?.notes||[]).join(" · ") || "공식 사이트에서 최신 전형/학비를 확인하세요.")}
+              </div>
+            </details>
+          </article>
+        `);
+      }
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    // ---------- Export / Import ----------
+    function exportCurrent(){
+      const state = getState();
+      const filtered = SCHOOLS.filter(s => matches(s, state));
+      const sorted = sortSchools(filtered, state);
+      const payload = JSON.stringify(sorted, null, 2);
+      navigator.clipboard?.writeText(payload).then(()=>{
+        smallMsg.textContent = "✅ 현재 결과 JSON을 클립보드에 복사했어요.";
+        setTimeout(()=> smallMsg.textContent="", 2200);
+      }).catch(()=>{
+        // fallback
+        prompt("아래 JSON을 복사하세요:", payload);
+      });
+    }
+
+    function importJson(){
+      const text = prompt("붙여넣을 JSON 배열을 입력하세요 (예: [{...}, {...}])");
+      if(!text) return;
+      try{
+        const arr = JSON.parse(text);
+        if(!Array.isArray(arr)) throw new Error("JSON이 배열이 아니에요.");
+        // 아주 기본적인 검증: name/id 존재
+        const cleaned = arr
+          .filter(x => x && typeof x === "object" && x.name)
+          .map(x => ({
+            id: x.id || ("school_" + Math.random().toString(16).slice(2)),
+            name: x.name,
+            city: x.city || "-",
+            country: x.country || "-",
+            region: x.region || "na",
+            tracks: Array.isArray(x.tracks) ? x.tracks : [],
+            highlights: Array.isArray(x.highlights) ? x.highlights : [],
+            admissions: x.admissions || { type:"-", typicalScores:[], notes:[] },
+            tuitionUSDPerYear: x.tuitionUSDPerYear || { min:0, max:0, note:"" },
+            startupResourcesScore: Number.isFinite(x.startupResourcesScore) ? x.startupResourcesScore : 50,
+            selectivityScore: Number.isFinite(x.selectivityScore) ? x.selectivityScore : 50,
+            links: x.links || {}
+          }));
+
+        // 기존 배열에 추가
+        SCHOOLS.push(...cleaned);
+        smallMsg.textContent = `✅ ${cleaned.length}개 학교를 추가했어요.`;
+        setTimeout(()=> smallMsg.textContent="", 2200);
+        render();
+      }catch(e){
+        alert("가져오기 실패: " + e.message);
+      }
+    }
+
+    // ---------- Events ----------
+    ["q","region","track","budget","sort"].forEach(id => {
+      $("#"+id).addEventListener("input", render);
+      $("#"+id).addEventListener("change", render);
+    });
+
+    $("#btnReset").addEventListener("click", ()=>{
+      $("#q").value="";
+      $("#region").value="all";
+      $("#track").value="all";
+      $("#budget").value="all";
+      $("#sort").value="fit";
+      render();
+    });
+
+    $("#btnExport").addEventListener("click", exportCurrent);
+    $("#btnImport").addEventListener("click", importJson);
+
+    // init
+    render();
+  </script>
 </body>
 </html>
